@@ -1,1 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cool Math Games - Free Online Math Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .search-bar {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 1em;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 10px rgba(26, 115, 232, 0.3);
+        }
+
+        .category-nav {
+            background: white;
+            padding: 15px;
+            border-bottom: 2px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .category-buttons {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .game-box {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-box:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .game-thumbnail {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: white;
+            font-weight: bold;
+        }
+
+        .game-box:nth-child(1) .game-thumbnail { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .game-box:nth-child(2) .game-thumbnail { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .game-box:nth-child(3) .game-thumbnail { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .game-box:nth-child(4) .game-thumbnail { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .game-box:nth-child(5) .game-thumbnail { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .game-box:nth-child(6) .game-thumbnail { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+        .game-box:nth-child(7) .game-thumbnail { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .game-box:nth-child(8) .game-thumbnail { background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%); }
+        .game-box:nth-child(9) .game-thumbnail { background: linear-gradient(135deg, #2e2e78 0%, #662d8c 100%); }
+        .game-box:nth-child(10) .game-thumbnail { background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); }
+        .game-box:nth-child(11) .game-thumbnail { background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); }
+        .game-box:nth-child(12) .game-thumbnail { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+
+        .game-info {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .game-rating {
+            text-align: center;
+            color: #ffa500;
+            font-size: 0.9em;
+            margin-top: auto;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .game-player {
+            width: 100%;
+            height: 500px;
+            background: #000;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+        }
+
+        .play-btn {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(26, 115, 232, 0.4);
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Cool Math Games</h1>
+        <p>Free Online Math Games and Puzzles</p>
+    </header>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search games..." onkeyup="filterGames()">
+    </div>
+
+    <div class="category-nav">
+        <div class="category-buttons">
+            <button class="category-btn active" onclick="filterByCategory('all')">All Games</button>
+            <button class="category-btn" onclick="filterByCategory('logic')">Logic</button>
+            <button class="category-btn" onclick="filterByCategory('math')">Math</button>
+            <button class="category-btn" onclick="filterByCategory('action')">Action</button>
+            <button class="category-btn" onclick="filterByCategory('puzzle')">Puzzle</button>
+            <button class="category-btn" onclick="filterByCategory('skill')">Skill</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="games-grid" id="gamesGrid">
+            <!-- Games will be inserted here -->
+        </div>
+    </div>
+
+    <!-- Game Modal -->
+    <div id="gameModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeGame()">&times;</span>
+            <h2 id="gameTitle"></h2>
+            <div class="game-player" id="gamePlayer">Game will load here</div>
+            <button class="play-btn" onclick="playGame()">Play Now</button>
+            <p id="gameDescription"></p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Cool Math Games. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const games = [
+            {
+                id: 1,
+                title: 'Bloxorz',
+                emoji: '📦',
+                category: 'logic',
+                rating: '★★★★★',
+                description: 'A fun logic puzzle game where you roll a block through a maze. Guide your rectangular block to the exit square in each level. Be careful not to fall off the edges!'
+            },
+            {
+                id: 2,
+                title: 'Run 3',
+                emoji: '🏃',
+                category: 'action',
+                rating: '★★★★★',
+                description: 'Run through a futuristic tunnel without falling! Jump over gaps and dodge obstacles. Unlock new characters and power-ups as you progress through the game.'
+            },
+            {
+                id: 3,
+                title: 'Duck Life',
+                emoji: '🦆',
+                category: 'skill',
+                rating: '★★★★☆',
+                description: 'Train your duck to race and win tournaments! Level up your duck\'s running, flying, and swimming abilities. Compete in races to earn money.'
+            },
+            {
+                id: 4,
+                title: 'Fireboy and Watergirl',
+                emoji: '🔥',
+                category: 'puzzle',
+                rating: '★★★★★',
+                description: 'Control both Fireboy and Watergirl to solve puzzles and navigate through levels. Use their unique powers to overcome obstacles and reach the exit.'
+            },
+            {
+                id: 5,
+                title: 'Math Batt',
+                emoji: '🧮',
+                category: 'math',
+                rating: '★★★★☆',
+                description: 'Answer math questions to power up your bat and hit the ball! The faster you answer, the stronger your hit. Improve your math skills while having fun!'
+            },
+            {
+                id: 6,
+                title: 'Chess',
+                emoji: '♞',
+                category: 'logic',
+                rating: '★★★★☆',
+                description: 'Play the classic game of chess against the computer. Test your strategic thinking and plan multiple moves ahead to checkmate your opponent.'
+            },
+            {
+                id: 7,
+                title: 'Snake',
+                emoji: '🐍',
+                category: 'action',
+                rating: '★★★★☆',
+                description: 'The classic Snake game! Eat the food, grow longer, and avoid crashing into your own tail. How high can you score?'
+            },
+            {
+                id: 8,
+                title: 'Sudoku',
+                emoji: '🔢',
+                category: 'puzzle',
+                rating: '★★★★☆',
+                description: 'Solve classic Sudoku puzzles. Fill in the grid so every number from 1-9 appears exactly once in each row, column, and 3x3 box.'
+            },
+            {
+                id: 9,
+                title: 'Flappy Bird',
+                emoji: '🐦',
+                category: 'action',
+                rating: '★★★★☆',
+                description: 'Tap to make the bird flap and navigate through pipes. Simple to learn, challenging to master. Compete for the highest score!'
+            },
+            {
+                id: 10,
+                title: 'Slope',
+                emoji: '⛷️',
+                category: 'skill',
+                rating: '★★★★★',
+                description: 'Roll a ball down an endless slope while avoiding obstacles. The further you go, the faster you go. Test your reflexes!'
+            },
+            {
+                id: 11,
+                title: 'Geometry Jump',
+                emoji: '⬜',
+                category: 'action',
+                rating: '★★★★☆',
+                description: 'Jump over obstacles and collect diamonds. Navigate through different environments and beat your high score.'
+            },
+            {
+                id: 12,
+                title: 'Cut the Rope',
+                emoji: '✂️',
+                category: 'puzzle',
+                rating: '★★★★★',
+                description: 'Feed candy to a cute little monster by cutting ropes. Solve physics-based puzzles and collect stars in each level.'
+            }
+        ];
+
+        let currentGame = null;
+        let allGames = [...games];
+
+        function renderGames(gamesToShow) {
+            const gamesGrid = document.getElementById('gamesGrid');
+            gamesGrid.innerHTML = '';
+
+            gamesToShow.forEach(game => {
+                const gameBox = document.createElement('div');
+                gameBox.className = 'game-box';
+                gameBox.onclick = () => openGame(game);
+                gameBox.innerHTML = `
+                    <div class="game-thumbnail">${game.emoji}</div>
+                    <div class="game-info">
+                        <div class="game-title">${game.title}</div>
+                        <div class="game-rating">${game.rating}</div>
+                    </div>
+                `;
+                gamesGrid.appendChild(gameBox);
+            });
+        }
+
+        function openGame(game) {
+            currentGame = game;
+            document.getElementById('gameTitle').textContent = game.title;
+            document.getElementById('gameDescription').textContent = game.description;
+            document.getElementById('gameModal').style.display = 'block';
+        }
+
+        function closeGame() {
+            document.getElementById('gameModal').style.display = 'none';
+            currentGame = null;
+        }
+
+        function playGame() {
+            if (currentGame) {
+                alert(`Now playing: ${currentGame.title}\n\nThe game would load here in a full implementation!`);
+            }
+        }
+
+        function filterByCategory(category) {
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filter games
+            if (category === 'all') {
+                renderGames(allGames);
+            } else {
+                const filtered = allGames.filter(game => game.category === category);
+                renderGames(filtered);
+            }
+        }
+
+        function filterGames() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allGames.filter(game => 
+                game.title.toLowerCase().includes(searchTerm) || 
+                game.description.toLowerCase().includes(searchTerm)
+            );
+            renderGames(filtered);
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('gameModal');
+            if (event.target === modal) {
+                closeGame();
+            }
+        }
+
+        // Initialize games on page load
+        renderGames(allGames);
+    </script>
+</body>
+</html>
